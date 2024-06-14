@@ -11,7 +11,7 @@ export default function Header() {
     }
   }
   return (
-    <div className="sticky top-0 z-50 bg-white py-3">
+    <div className="sticky top-0 z-50 bg-white py-3 shadow-md">
       <div className="container mx-auto px-3 flex justify-between items-center">
         <div className="logo">
           <ProjectLogo navigate={navigate} />
@@ -22,7 +22,7 @@ export default function Header() {
               onClick={() => navigate("/")}
               className={`py-2 cursor-pointer  text-gray-400 ${
                 checkLocation("/") &&
-                " text-black  border-b-[3px] border-b-[#ef5e4e]"
+                " !text-black  !border-b-[3px] border-b-[#ef5e4e]"
               }`}
             >
               Home
@@ -31,7 +31,7 @@ export default function Header() {
               onClick={() => navigate("/offers")}
               className={`py-2 cursor-pointer  text-gray-400 ${
                 checkLocation("/offers") &&
-                " text-black  border-b-[3px] border-b-[#ef5e4e]"
+                " !text-black  border-b-[3px] border-b-[#ef5e4e]"
               }`}
             >
               Offers
@@ -40,7 +40,7 @@ export default function Header() {
               onClick={() => navigate("/sign-in")}
               className={`  py-2 cursor-pointer   text-gray-400 ${
                 checkLocation("/sign-in") &&
-                " text-black  border-b-[3px] border-b-[#ef5e4e]"
+                " !text-black  border-b-[3px] border-b-[#ef5e4e]"
               }`}
             >
               Sign in
