@@ -2,6 +2,13 @@ import { useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { db } from "../firebase.config";
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
 
 function SingUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +24,26 @@ function SingUp() {
       [e.target.id]: e.target.value,
     }));
   }
+
+  async function submitHandler(e) {
+    e.preventDefault();
+    try {
+      const auth = getAuth();
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredentials.user;
+      console.log(user);
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <section>
       <h1 className="text-center text-3xl mt-6 font-bold">Sign Up</h1>
@@ -85,7 +112,7 @@ function SingUp() {
               </Link>
             </div>
             <button
-              onClick={(e) => e.preventDefault()}
+              onClick={submitHandler}
               type="submit"
               className="bg-blue-700 text-white uppercase w-full py-[10px] mt-6 rounded hover:bg-blue-800 transition duration-200 ease-in-out"
             >
