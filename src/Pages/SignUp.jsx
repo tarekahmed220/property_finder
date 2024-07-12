@@ -3,12 +3,14 @@ import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
 import { db } from "../firebase.config";
+import { toast } from "react-toastify";
 import {
-  Auth,
   createUserWithEmailAndPassword,
   getAuth,
   updateProfile,
 } from "firebase/auth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 function SingUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,6 +20,7 @@ function SingUp() {
     password: "",
   });
   const { name, email, password } = formData;
+  const navigate = useNavigate();
   function onChange(e) {
     setFormData((prevState) => ({
       ...prevState,
@@ -27,6 +30,7 @@ function SingUp() {
 
   async function submitHandler(e) {
     e.preventDefault();
+
     try {
       const auth = getAuth();
       const userCredentials = await createUserWithEmailAndPassword(
@@ -35,11 +39,17 @@ function SingUp() {
         password
       );
       const user = userCredentials.user;
-      console.log(user);
+
       updateProfile(auth.currentUser, {
         displayName: name,
       });
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+      setDoc(doc(db, "users", user.uid), formDataCopy);
+      navigate("/");
     } catch (error) {
+      toast.error("something went wrong ");
       console.log(error);
     }
   }
@@ -55,6 +65,7 @@ function SingUp() {
             alt="singin img"
           />
         </div>
+
         <div className="formcontainer  w-[100%] md:w-[40%] !mx-5">
           <form>
             <input
