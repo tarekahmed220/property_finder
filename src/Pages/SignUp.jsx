@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
@@ -20,6 +20,13 @@ function SingUp() {
     password: "",
   });
   const { name, email, password } = formData;
+  const [nameStyle, setNameStyle] = useState({});
+  const [emailstyle, setEmailStyle] = useState({});
+  const [passwordStyle, setPasswordStyle] = useState({});
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const inputRefs = [nameRef, emailRef, passwordRef];
   const navigate = useNavigate();
   function onChange(e) {
     setFormData((prevState) => ({
@@ -30,6 +37,19 @@ function SingUp() {
 
   async function submitHandler(e) {
     e.preventDefault();
+    // if (!name || !email || !password) {
+    //   toast.warning("please complete your data");
+    //   return;
+    // }
+    if (!email || !password) {
+      inputRefs.forEach((ref) => {
+        if (!ref.current.value) {
+          ref.current.style.border = "1px solid red ";
+        }
+      });
+      toast.warning("please fill your email and password");
+      return;
+    }
 
     try {
       const auth = getAuth();
@@ -49,9 +69,31 @@ function SingUp() {
       setDoc(doc(db, "users", user.uid), formDataCopy);
       navigate("/");
     } catch (error) {
-      toast.error("something went wrong ");
-      console.log(error);
+      if (error.code === "auth/user-not-found") {
+        toast.error("This email is not registered. Please sign up.");
+      } else if (error.code === "auth/wrong-password") {
+        toast.error("Incorrect password. Please try again.");
+      } else if (error.code === "auth/invalid-email") {
+        toast.error("Invalid email format.");
+      } else if (error.code === "auth/invalid-credential") {
+        toast.error(
+          "Invalid credentials. Please check your email and password."
+        );
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+      console.error("Error signing in:", error);
     }
+  }
+  function blurHandler(inputRef, setStyles) {
+    if (!inputRef.current.value) {
+      setStyles({ border: "1px solid red" });
+    } else {
+      setStyles({ border: "1px solid blue " });
+    }
+  }
+  function focusHandler(setStyles) {
+    setStyles({ border: "1px solid blue " });
   }
 
   return (
@@ -69,6 +111,10 @@ function SingUp() {
         <div className="formcontainer  w-[100%] md:w-[40%] !mx-5">
           <form>
             <input
+              ref={nameRef}
+              style={nameStyle}
+              onBlur={() => blurHandler(nameRef, setNameStyle)}
+              onFocus={() => focusHandler(setNameStyle)}
               className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase placeholder:uppercase text-md"
               type="text"
               id="name"
@@ -77,6 +123,10 @@ function SingUp() {
               onChange={onChange}
             />
             <input
+              ref={emailRef}
+              style={emailstyle}
+              onBlur={() => blurHandler(emailRef, setEmailStyle)}
+              onFocus={() => focusHandler(setEmailStyle)}
               className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
               type="text"
               id="email"
@@ -86,6 +136,10 @@ function SingUp() {
             />
             <div className="relative">
               <input
+                style={passwordStyle}
+                onBlur={() => blurHandler(passwordRef, setPasswordStyle)}
+                onFocus={() => focusHandler(setPasswordStyle)}
+                ref={passwordRef}
                 className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
                 type={showPassword ? "text" : "password"}
                 id="password"

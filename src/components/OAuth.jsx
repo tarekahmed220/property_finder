@@ -25,7 +25,16 @@ export default function OAuth() {
         navigate("/");
         toast.success("success authorize with google");
       } else {
-        toast.error("this user is already exist");
+        await setDoc(
+          docRef,
+          {
+            name: user.displayName,
+            email: user.email,
+            timestamp: serverTimestamp(),
+          },
+          { merge: true }
+        );
+        navigate("/");
       }
     } catch (error) {
       toast.error("could not authorize with google");

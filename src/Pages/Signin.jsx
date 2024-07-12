@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OAuth from "../components/OAuth";
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { toast } from "react-toastify";
 
 function Signin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,13 +11,71 @@ function Signin() {
     email: "",
     password: "",
   });
+  const [emailstyle, setEmailStyle] = useState({});
+  const [passwordStyle, setPasswordStyle] = useState({});
+
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const inputRefs = [emailRef, passwordRef];
+
   const { email, password } = formData;
+  const navigate = useNavigate();
   function onChange(e) {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.id]: e.target.value,
     }));
   }
+
+  async function submitHandler(e) {
+    e.preventDefault();
+    if (!email || !password) {
+      inputRefs.forEach((ref) => {
+        if (!ref.current.value) {
+          ref.current.style.border = "1px solid red ";
+        }
+      });
+      toast.warning("please fill your email and password");
+      return;
+    }
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (userCredential.user) {
+        navigate("/");
+      }
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+        toast.error("This email is not registered. Please sign up.");
+      } else if (error.code === "auth/wrong-password") {
+        toast.error("Incorrect password. Please try again.");
+      } else if (error.code === "auth/invalid-email") {
+        toast.error("Invalid email format.");
+      } else if (error.code === "auth/invalid-credential") {
+        toast.error(
+          "Invalid credentials. Please check your email and password."
+        );
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+      console.error("Error signing in:", error);
+    }
+  }
+  function handleBlur(inputRef, setEmailStyle) {
+    if (!inputRef.current.value) {
+      setEmailStyle({ border: "1px solid red" });
+    } else {
+      setEmailStyle({ border: "1px solid rgb(209 213 219)" });
+    }
+  }
+  function handleFocus(setEmailStyle) {
+    setEmailStyle({ border: "1px solid blue" });
+  }
+
   return (
     <section>
       <h1 className="text-center text-3xl mt-6 font-bold">Sign In</h1>
@@ -30,7 +90,11 @@ function Signin() {
         <div className="formcontainer  w-[100%] md:w-[40%] !mx-5">
           <form>
             <input
-              className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
+              style={emailstyle}
+              ref={emailRef}
+              onBlur={() => handleBlur(emailRef, setEmailStyle)}
+              onFocus={() => handleFocus(setEmailStyle)}
+              className=" my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
               type="text"
               id="email"
               placeholder="Email Address"
@@ -39,7 +103,11 @@ function Signin() {
             />
             <div className="relative">
               <input
+                onBlur={() => handleBlur(passwordRef, setPasswordStyle)}
+                onFocus={() => handleFocus(setPasswordStyle)}
+                style={passwordStyle}
                 className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
+                ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 id="password"
                 placeholder="Password"
@@ -76,7 +144,7 @@ function Signin() {
               </Link>
             </div>
             <button
-              onClick={(e) => e.preventDefault()}
+              onClick={submitHandler}
               type="submit"
               className="bg-blue-700 text-white uppercase w-full py-[10px] mt-6 rounded hover:bg-blue-800 transition duration-200 ease-in-out"
             >
