@@ -10,12 +10,14 @@ import Header from "./components/Header";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/privateRoute";
+import { useState } from "react";
 
 function App() {
+  const [showLinks, setShowLinks] = useState(false);
   return (
     <>
       <Router>
-        <Header />
+        <Header setShowLinks={setShowLinks} showLinks={showLinks} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="profile" element={<PrivateRoute />}>
