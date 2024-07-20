@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import { Link } from "react-router-dom";
 import OAuth from "../components/OAuth";
-import { db } from "../firebase.config";
+import { db } from "../firebase";
 import { toast } from "react-toastify";
 import {
   createUserWithEmailAndPassword,

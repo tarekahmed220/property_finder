@@ -1,13 +1,42 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import OAuth from "../components/OAuth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import { toast } from "react-toastify";
+import { db } from "../firebase";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const inputRef = useRef();
 
   function onChange(e) {
     setEmail(e.target.value);
   }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+
+    if (!email) {
+      inputRef.current.style.border = "1px solid red";
+      return toast.warning("please fill your email");
+    }
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("email", "==", email));
+
+    try {
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        toast.error("Email does not exist in the database");
+      } else {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth, email);
+        toast.success("Email was send successfully");
+      }
+    } catch (error) {
+      toast.error("could not send reset password");
+    }
+  }
+
   return (
     <section>
       <h1 className="text-center text-3xl mt-6 font-bold">Forgot Password</h1>
@@ -20,8 +49,17 @@ function ForgotPassword() {
           />
         </div>
         <div className="formcontainer  w-[100%] md:w-[40%] !mx-5">
-          <form>
+          <form onSubmit={onSubmit}>
             <input
+              ref={inputRef}
+              onFocus={() => {
+                inputRef.current.style.border = "1px solid blue";
+              }}
+              onBlur={() => {
+                if (!inputRef.current.value) {
+                  inputRef.current.style.border = "1px solid red";
+                }
+              }}
               className="my-6 w-full px-3 py-3 rounded bg-white text-gray-700 lowercase text-md placeholder:uppercase"
               type="text"
               id="email"
@@ -47,17 +85,13 @@ function ForgotPassword() {
               </Link>
             </div>
             <button
-              onClick={(e) => e.preventDefault()}
               type="submit"
               className="bg-blue-700 text-white uppercase w-full py-[10px] mt-6 rounded hover:bg-blue-800 transition duration-200 ease-in-out"
             >
               {" "}
               send reset email
             </button>
-            <div className="flex before:border-t before:flex-1 before:border-gray-300 justify-center items-center  my-4 after:border-t after:flex-1 after:border-gray-300">
-              <p className="text-center mx-4">OR</p>
-            </div>
-            <OAuth />
+            <div className="flex before:border-t before:flex-1 before:border-gray-300 justify-center items-center  my-4 after:border-t after:flex-1 after:border-gray-300"></div>
           </form>
         </div>
       </div>
