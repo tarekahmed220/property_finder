@@ -1,21 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProjectLogo from "./logo/ProjectLogo";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 export default function Header({ showLinks, setShowLinks }) {
   const navigate = useNavigate();
+  const [userState, setUserState] = useState("Sign in");
   const location = useLocation().pathname;
   function checkLocation(pageName) {
     if (location === pageName) {
       return true;
     }
   }
+  const auth = getAuth();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserState("Profile");
+      } else {
+        setUserState("Sign in");
+      }
+      return () => unsubscribe();
+    });
+  }, [auth]);
   return (
-    <>
-      <nav className="bg-gray-800">
+    <div className="sticky top-0 z-50 bg-white py-3 shadow-md">
+      <div className="container mx-auto px-3 flex justify-between items-center">
+        <div className="logo">
+          <ProjectLogo navigate={navigate} />
+        </div>
+        <div className="links">
+          <ul className="flex md:space-x-10 space-x-4 font-semibold text-[18px]">
+            <li
+              onClick={() => navigate("/")}
+              className={`py-2 cursor-pointer  text-gray-400 ${
+                checkLocation("/") &&
+                " !text-black  !border-b-[3px] border-b-[#ef5e4e]"
+              }`}
+            >
+              Home
+            </li>
+            <li
+              onClick={() => navigate("/offers")}
+              className={`py-2 cursor-pointer  text-gray-400 ${
+                checkLocation("/offers") &&
+                " !text-black  border-b-[3px] border-b-[#ef5e4e]"
+              }`}
+            >
+              Offers
+            </li>
+            <li
+              onClick={() => navigate("/profile")}
+              className={`  py-2 cursor-pointer   text-gray-400 ${
+                checkLocation("/sign-in") ||
+                (checkLocation("/profile") &&
+                  " !text-black  border-b-[3px] border-b-[#ef5e4e]")
+              }`}
+            >
+              {userState}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 
+ <nav className="bg-gray-800">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              {/* <!-- Mobile menu button--> */}
+            }
               <button
                 type="button"
                 className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -25,9 +80,7 @@ export default function Header({ showLinks, setShowLinks }) {
                 <span className="absolute -inset-0.5"></span>
                 <span className="sr-only">Open main menu</span>
 
-                {/* Icon when menu is closed.
-
-            Menu open: "hidden", Menu closed: "block" */}
+               
 
                 <svg
                   className="block h-6 w-6"
@@ -43,11 +96,7 @@ export default function Header({ showLinks, setShowLinks }) {
                     d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
                   />
                 </svg>
-                {/* <!--
-            Icon when menu is open.
-
-            Menu open: "block", Menu closed: "hidden"
-          --> */}
+               
                 <svg
                   className="hidden h-6 w-6"
                   fill="none"
@@ -74,7 +123,7 @@ export default function Header({ showLinks, setShowLinks }) {
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
-                  {/* <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" --> */}
+                 
                   <a
                     href="#"
                     className="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white"
@@ -126,7 +175,6 @@ export default function Header({ showLinks, setShowLinks }) {
                 </svg>
               </button>
 
-              {/* <!-- Profile dropdown --> */}
               <div className="relative ml-3">
                 <div
                   id="imageBtn"
@@ -151,16 +199,7 @@ export default function Header({ showLinks, setShowLinks }) {
                   </button>
                 </div>
 
-                {/* <!--
-            Dropdown menu, show/hide based on menu state.
-
-            Entering: "transition ease-out duration-100"
-              From: "transform opacity-0 scale-95"
-              To: "transform opacity-100 scale-100"
-            Leaving: "transition ease-in duration-75"
-              From: "transform opacity-100 scale-100"
-              To: "transform opacity-0 scale-95"
-          --> */}
+              
                 <div
                   id="links"
                   style={{ display: showLinks ? "block" : "none" }}
@@ -170,7 +209,6 @@ export default function Header({ showLinks, setShowLinks }) {
                   aria-labelledby="user-menu-button"
                   tabIndex="-1"
                 >
-                  {/* <!-- Active: "bg-gray-100", Not Active: "" --> */}
                   <a
                     href="#"
                     className="block px-4 py-2 text-sm text-gray-700"
@@ -204,10 +242,9 @@ export default function Header({ showLinks, setShowLinks }) {
           </div>
         </div>
 
-        {/* <!-- Mobile menu, show/hide based on menu state. --> */}
         <div className="sm:hidden" id="mobile-menu">
           <div className="space-y-1 px-2 pb-3 pt-2">
-            {/* <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" --> */}
+           
             <a
               href="#"
               className="block rounded-md bg-gray-900 px-3 py-2 text-base font-medium text-white"
@@ -237,44 +274,5 @@ export default function Header({ showLinks, setShowLinks }) {
         </div>
       </nav>
 
-      <div className="sticky top-0 z-50 bg-white py-3 shadow-md">
-        <div className="container mx-auto px-3 flex justify-between items-center">
-          <div className="logo">
-            <ProjectLogo navigate={navigate} />
-          </div>
-          <div className="links">
-            <ul className="flex md:space-x-10 space-x-4 font-semibold text-[18px]">
-              <li
-                onClick={() => navigate("/")}
-                className={`py-2 cursor-pointer  text-gray-400 ${
-                  checkLocation("/") &&
-                  " !text-black  !border-b-[3px] border-b-[#ef5e4e]"
-                }`}
-              >
-                Home
-              </li>
-              <li
-                onClick={() => navigate("/offers")}
-                className={`py-2 cursor-pointer  text-gray-400 ${
-                  checkLocation("/offers") &&
-                  " !text-black  border-b-[3px] border-b-[#ef5e4e]"
-                }`}
-              >
-                Offers
-              </li>
-              <li
-                onClick={() => navigate("/sign-in")}
-                className={`  py-2 cursor-pointer   text-gray-400 ${
-                  checkLocation("/sign-in") &&
-                  " !text-black  border-b-[3px] border-b-[#ef5e4e]"
-                }`}
-              >
-                Sign in
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
+
+*/

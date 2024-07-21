@@ -1,11 +1,12 @@
 import { getAuth, updateProfile } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 
 function Profile() {
+  const inputNameRef = useRef();
   const navigate = useNavigate();
   const auth = getAuth();
   const [profileData, setProfileData] = useState({
@@ -35,12 +36,18 @@ function Profile() {
       toast.error("sorry, we can't update your name");
     }
   }
+  useEffect(() => {
+    if (!changeData) {
+      inputNameRef.current.focus();
+    }
+  }, [changeData]);
   return (
     <>
       <section className=" w-[100%] md:w-[50%] px-3 my-6 flex justify-center items-center flex-col mx-auto">
         <h1 className="text-2xl md:text-3xl font-bold mb-6"> My Profile</h1>
         <form className="w-full ">
           <input
+            ref={inputNameRef}
             disabled={changeData}
             type="text"
             id="name"
@@ -48,7 +55,9 @@ function Profile() {
             onChange={(e) => {
               setProfileData({ ...profileData, [e.target.id]: e.target.value });
             }}
-            className="w-full mb-6 "
+            className={`w-full mb-6 ${
+              !changeData ? "bg-red-200 focus:border focus:border-gray-200" : ""
+            }`}
           />
           <input
             disabled
