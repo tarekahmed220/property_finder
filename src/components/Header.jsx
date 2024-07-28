@@ -51,9 +51,9 @@ export default function Header({ showLinks, setShowLinks }) {
             <li
               onClick={() => navigate("/profile")}
               className={`  py-2 cursor-pointer   text-gray-400 ${
-                checkLocation("/sign-in") ||
-                (checkLocation("/profile") &&
-                  " !text-black  border-b-[3px] border-b-[#ef5e4e]")
+                checkLocation("/sign-in") || checkLocation("/profile")
+                  ? " !text-black  border-b-[3px] border-b-[#ef5e4e]"
+                  : ""
               }`}
             >
               {userState}
