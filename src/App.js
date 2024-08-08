@@ -13,6 +13,7 @@ import PrivateRoute from "./components/privateRoute";
 import { useState } from "react";
 import CreateListing from "./Pages/createListing";
 import EditListing from "./Pages/EditListing";
+import Listing from "./Pages/Listing";
 
 function App() {
   const [showLinks, setShowLinks] = useState(false);
@@ -28,6 +29,10 @@ function App() {
           <Route path="sign-in" element={<Signin />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="offers" element={<Offers />} />
+          <Route
+            path="category/:categoryName/:listingId"
+            element={<Listing />}
+          />
           <Route path="create-listing" element={<PrivateRoute />}>
             <Route path="" element={<CreateListing />} />
           </Route>

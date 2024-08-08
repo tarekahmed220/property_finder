@@ -181,20 +181,22 @@ export default function CreateListing() {
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   }
 
-  if (loading) {
-    <BeatLoader
-      size={"30px"}
-      color="#ef5e4e"
-      cssOverride={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%,-50%)",
-      }}
-    />;
-  }
   return (
     <main className="max-w-md px-2 mx-auto">
+      {loading && (
+        <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-75 z-50">
+          <BeatLoader
+            size={"30px"}
+            color="#ef5e4e"
+            cssOverride={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        </div>
+      )}
       <h1 className="text-3xl text-center mt-6 font-bold">Create a Listing</h1>
       <form onSubmit={onSubmit}>
         <p className="text-lg mt-6 font-semibold">Sell / Rent</p>
