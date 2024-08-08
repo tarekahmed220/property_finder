@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/privateRoute";
 import { useState } from "react";
 import CreateListing from "./Pages/createListing";
+import EditListing from "./Pages/EditListing";
 
 function App() {
   const [showLinks, setShowLinks] = useState(false);
@@ -29,6 +30,9 @@ function App() {
           <Route path="offers" element={<Offers />} />
           <Route path="create-listing" element={<PrivateRoute />}>
             <Route path="" element={<CreateListing />} />
+          </Route>
+          <Route path="edit-listing" element={<PrivateRoute />}>
+            <Route path="/edit-listing/:listingId" element={<EditListing />} />
           </Route>
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<PageNotFound />} />
