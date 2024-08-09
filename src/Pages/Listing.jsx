@@ -19,12 +19,16 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/scrollbar";
+import { getAuth } from "firebase/auth";
+import Contact from "../components/Contact";
 
 export default function Listing() {
   const [listing, setLIsting] = useState(null);
   const [shareLink, setShareLink] = useState(false);
   const params = useParams();
   const [loading, setLoading] = useState(true);
+  const [contactLandlord, setContactLandlord] = useState(false);
+  const auth = getAuth();
   useEffect(() => {
     async function fetchListing() {
       const docRef = doc(db, "listings", params.listingId);
@@ -84,7 +88,6 @@ export default function Listing() {
       </Swiper>
       <div
         onClick={() => {
-          console.log("copied");
           navigator.clipboard.writeText(window.location.href);
           setShareLink(true);
           setTimeout(() => {
@@ -97,11 +100,11 @@ export default function Listing() {
       </div>
       {shareLink && (
         <p className="fixed z-10 top-[13%] right-[5%] font-semibold border-2 border-gray-400 rounded-md bg-white p-2 ">
-          Link Copied
+          Link copied
         </p>
       )}
       <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
-        <div className=" w-full h-[200px] lg-[400px] ">
+        <div className=" w-full ">
           <p className="text-2xl font-bold mb-3 text-blue-900 ">
             {listing.name} - $
             {listing.offer
@@ -152,6 +155,21 @@ export default function Listing() {
               {listing.parking ? "Furnished" : "No Furnished"}
             </li>
           </ul>
+          {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
+            <div className="mt-6">
+              <button
+                onClick={() => {
+                  setContactLandlord(true);
+                }}
+                className="px-7 py-3 bg-blue-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg w-full text-center transition duration-150 ease-in-out"
+              >
+                Contact landlord
+              </button>
+            </div>
+          )}
+          {contactLandlord && (
+            <Contact userRef={listing.userRef} listing={listing} />
+          )}
         </div>
         <div className="bg-blue-300 w-full h-[200px] lg-[400px] z-10 overflow-x-hidden"></div>
       </div>
