@@ -12,5 +12,5 @@ body {
 }
 
 .swiper-pagination-progressbar .swiper-pagination-progressbar-fill {
-  background-color: #a8dadc;
+  background-color: #a8dadc !important;
 }

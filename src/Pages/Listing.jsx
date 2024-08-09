@@ -126,13 +126,13 @@ export default function Listing() {
             <p className="bg-red-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
               {listing.type === "rent" ? "Rent" : "Sale"}
             </p>
-            <p className="bg-green-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
-              {listing.offer && (
+            {listing.offer && (
+              <p className="bg-green-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
                 <p>
                   ${+listing.regularPrice - +listing.discountedPrice} discount
                 </p>
-              )}
-            </p>
+              </p>
+            )}
           </div>
           <p className="my-3 ">
             <span className="font-semibold"> Description -</span>{" "}
@@ -186,9 +186,7 @@ export default function Listing() {
             <Marker
               position={[listing.geolocation.lat, listing.geolocation.lng]}
             >
-              <Popup>
-                A pretty CSS3 popup. <br /> Easily customizable.
-              </Popup>
+              <Popup>{listing.address}</Popup>
             </Marker>
           </MapContainer>
         </div>
