@@ -2,7 +2,6 @@ import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { BeatLoader } from "react-spinners";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectFade, Navigation, Pagination, Autoplay } from "swiper/modules";
 import {
@@ -22,6 +21,7 @@ import "swiper/css/scrollbar";
 import { getAuth } from "firebase/auth";
 import Contact from "../components/Contact";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import Spinner from "../components/Spinner";
 
 export default function Listing() {
   const [listing, setLIsting] = useState(null);
@@ -47,16 +47,7 @@ export default function Listing() {
   if (loading) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-75 z-50">
-        <BeatLoader
-          size={"30px"}
-          color="#ef5e4e"
-          cssOverride={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
+        <Spinner />
       </div>
     );
   }

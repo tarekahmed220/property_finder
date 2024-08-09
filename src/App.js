@@ -14,6 +14,7 @@ import { useState } from "react";
 import CreateListing from "./Pages/createListing";
 import EditListing from "./Pages/EditListing";
 import Listing from "./Pages/Listing";
+import Category from "./Pages/Category";
 
 function App() {
   const [showLinks, setShowLinks] = useState(false);
@@ -29,6 +30,7 @@ function App() {
           <Route path="sign-in" element={<Signin />} />
           <Route path="sign-up" element={<SignUp />} />
           <Route path="offers" element={<Offers />} />
+          <Route path="/category/:categoryName" element={<Category />} />
           <Route
             path="category/:categoryName/:listingId"
             element={<Listing />}

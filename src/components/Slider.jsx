@@ -2,7 +2,6 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
 import { db } from "../firebase";
-import { BeatLoader } from "react-spinners";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectFade, Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
@@ -11,6 +10,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import "swiper/css/scrollbar";
 import { useNavigate } from "react-router-dom";
+import Spinner from "./Spinner";
 
 export default function Slider() {
   const navigate = useNavigate();
@@ -37,16 +37,7 @@ export default function Slider() {
   if (loading) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-white bg-opacity-75 z-50">
-        <BeatLoader
-          size={"30px"}
-          color="#ef5e4e"
-          cssOverride={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
+        <Spinner />
       </div>
     );
   }
